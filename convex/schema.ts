@@ -25,7 +25,7 @@ export default defineSchema({
     .index("by_category", ["categorySlug"])
     .index("by_featured", ["isFeatured"]),
 
-  orders: defineTable({
+    orders: defineTable({
     customerName: v.string(),
     phone: v.string(),
     address: v.string(),
@@ -42,6 +42,37 @@ export default defineSchema({
     deliveryFee: v.number(),
     total: v.number(),
     paymentMethod: v.string(), // "cod" | "card"
-    status: v.string(), // "pending" | "confirmed" | "delivered"
+    status: v.string(), // "confirmed" | "packing" | "out_for_delivery" | "delivered"
+    // Live tracking fields
+    rider: v.optional(
+      v.object({
+        name: v.string(),
+        phone: v.string(),
+        vehicle: v.string(), // e.g. "Electric Scooter"
+        rating: v.number(), // e.g. 4.9
+        avatarUrl: v.string(),
+      })
+    ),
+    riderLocation: v.optional(
+      v.object({
+        lat: v.number(),
+        lng: v.number(),
+        heading: v.number(), // angle in degrees 0-360 for vehicle rotation
+      })
+    ),
+    storeLocation: v.optional(
+      v.object({
+        lat: v.number(),
+        lng: v.number(),
+        name: v.string(),
+      })
+    ),
+    destinationLocation: v.optional(
+      v.object({
+        lat: v.number(),
+        lng: v.number(),
+      })
+    ),
+    estimatedMinutes: v.optional(v.number()),
   }).index("by_status", ["status"]),
-});
+ });

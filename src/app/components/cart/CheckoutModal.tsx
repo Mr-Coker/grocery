@@ -5,6 +5,7 @@ import { X, CheckCircle2, MapPin, Phone, User, CreditCard, Banknote, Loader2 } f
 import { useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { useCart } from "../../context/CartContext";
+import { OrderTrackingModal } from "../tracking/OrderTrackingModal";
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -22,6 +23,8 @@ export function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
   const [paymentMethod, setPaymentMethod] = useState<"cod" | "card">("cod");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmedOrderId, setConfirmedOrderId] = useState<string | null>(null);
+  const [isTrackingOpen, setIsTrackingOpen] = useState(false);
+
 
   if (!isOpen) return null;
 
@@ -99,13 +102,22 @@ export function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
               <p className="font-mono text-emerald-700 text-sm mt-0.5">{confirmedOrderId}</p>
               <p className="text-[11px] text-stone-400 mt-1">Delivery to: {address}</p>
             </div>
-            <button
-              type="button"
-              onClick={handleFinish}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-2xl text-sm transition-all shadow-md shadow-emerald-200 cursor-pointer"
-            >
-              Continue Shopping
-            </button>
+            <div className="space-y-2 w-full">
+              <button
+                type="button"
+                onClick={() => setIsTrackingOpen(true)}
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-2xl text-sm transition-all shadow-md shadow-emerald-200 cursor-pointer flex items-center justify-center space-x-2"
+              >
+                <span>🛵 Track Live Delivery</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleFinish}
+                className="w-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold py-3 rounded-2xl text-sm transition-all cursor-pointer"
+              >
+                Continue Shopping
+              </button>
+            </div>
           </div>
         ) : (
           /* Checkout Form */
@@ -227,6 +239,17 @@ export function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
           </>
         )}
       </div>
+
+      {/* Live Order Tracking Modal */}
+      {isTrackingOpen && confirmedOrderId && (
+        <OrderTrackingModal
+          orderId={confirmedOrderId}
+          onClose={() => {
+            setIsTrackingOpen(false);
+            handleFinish();
+          }}
+        />
+      )}
     </div>
   );
 }
