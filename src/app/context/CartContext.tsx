@@ -20,6 +20,10 @@ interface CartContextType {
   savings: number;
   deliveryFee: number;
   total: number;
+  isCartOpen: boolean;
+  setIsCartOpen: (open: boolean) => void;
+  openCart: () => void;
+  closeCart: () => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -29,6 +33,10 @@ const CART_STORAGE_KEY = "freshmart_cart_v1";
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+
+  const openCart = () => setIsCartOpen(true);
+  const closeCart = () => setIsCartOpen(false);
 
   // 1. Load cart from localStorage on initial client mount
   useEffect(() => {
@@ -142,6 +150,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         savings,
         deliveryFee,
         total,
+        isCartOpen,
+        setIsCartOpen,
+        openCart,
+        closeCart,
       }}
     >
       {children}

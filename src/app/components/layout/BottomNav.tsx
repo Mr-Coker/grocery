@@ -3,6 +3,7 @@
 import { Home, LayoutGrid, ShoppingBag, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useCart } from "../../context/CartContext";
 
 interface BottomNavProps {
   cartItemCount?: number;
@@ -10,11 +11,12 @@ interface BottomNavProps {
 
 export function BottomNav({ cartItemCount = 0 }: BottomNavProps) {
   const pathname = usePathname();
+  const { openCart } = useCart();
 
   const navItems = [
     { label: "Home", href: "/", icon: Home },
     { label: "Categories", href: "#categories", icon: LayoutGrid },
-    { label: "Cart", href: "/cart", icon: ShoppingBag, badge: cartItemCount },
+    { label: "Cart", onClick: openCart, icon: ShoppingBag, badge: cartItemCount },
     { label: "Profile", href: "/profile", icon: User },
   ];
 
@@ -23,18 +25,10 @@ export function BottomNav({ cartItemCount = 0 }: BottomNavProps) {
       <div className="max-w-md mx-auto flex items-center justify-around">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href;
+          const isActive = item.href ? pathname === item.href : false;
 
-          return (
-            <Link
-              key={item.label}
-              href={item.href}
-              className={`relative flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all active:scale-95 ${
-                isActive
-                  ? "text-emerald-600 font-semibold"
-                  : "text-stone-400 hover:text-stone-600 font-medium"
-              }`}
-            >
+          const content = (
+            <>
               <div className="relative">
                 <Icon className={`w-5 h-5 ${isActive ? "stroke-[2.5]" : "stroke-[1.8]"}`} />
                 {item.badge !== undefined && item.badge > 0 && (
@@ -44,6 +38,33 @@ export function BottomNav({ cartItemCount = 0 }: BottomNavProps) {
                 )}
               </div>
               <span className="text-[11px] mt-1">{item.label}</span>
+            </>
+          );
+
+          if (item.onClick) {
+            return (
+              <button
+                key={item.label}
+                type="button"
+                onClick={item.onClick}
+                className="relative flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all active:scale-95 text-stone-400 hover:text-stone-600 font-medium cursor-pointer"
+              >
+                {content}
+              </button>
+            );
+          }
+
+          return (
+            <Link
+              key={item.label}
+              href={item.href!}
+              className={`relative flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all active:scale-95 ${
+                isActive
+                  ? "text-emerald-600 font-semibold"
+                  : "text-stone-400 hover:text-stone-600 font-medium"
+              }`}
+            >
+              {content}
             </Link>
           );
         })}

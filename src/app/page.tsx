@@ -8,15 +8,14 @@ import { BottomNav } from "./components/layout/BottomNav";
 import { CategoryPills } from "./components/grocery/CategoryPills";
 import { ProductGrid } from "./components/grocery/ProductGrid";
 import { Product } from "./components/grocery/ProductCard";
-import { Sparkles} from "lucide-react";
+import { Sparkles, ShoppingBag, ArrowRight } from "lucide-react";
 import { useCart } from "./context/CartContext";
-
+import { CartBottomSheet } from "./components/cart/CartBottomSheet";
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const { totalItems } = useCart();
-
+  const { totalItems, total, openCart } = useCart();
 
   // 1. Fetch products from Convex reactive backend
   const allProducts = useQuery(api.products.getProducts, {
@@ -35,7 +34,7 @@ export default function HomePage() {
   }) as Product[] | undefined;
 
   return (
-    <div className="min-h-screen bg-stone-50 flex flex-col pb-24">
+    <div className="min-h-screen bg-stone-50 flex flex-col pb-28">
       {/* 1. Sticky Mobile Header */}
       <Header
         searchQuery={searchQuery}
@@ -99,9 +98,43 @@ export default function HomePage() {
         </section>
       </main>
 
+      {/* Floating Quick Cart Bar (appears when items are in cart) */}
+      {totalItems > 0 && (
+        <div className="fixed bottom-16 inset-x-0 z-30 px-4 pointer-events-none">
+          <div className="max-w-md mx-auto">
+            <button
+              type="button"
+              onClick={openCart}
+              className="pointer-events-auto w-full bg-emerald-600 hover:bg-emerald-700 text-white p-3 rounded-2xl shadow-xl shadow-emerald-700/30 flex items-center justify-between transition-all active:scale-[0.98] animate-in slide-in-from-bottom duration-300 cursor-pointer"
+            >
+              <div className="flex items-center space-x-2.5">
+                <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
+                  <ShoppingBag className="w-4 h-4" />
+                </div>
+                <div className="text-left">
+                  <p className="text-xs font-bold leading-tight">
+                    {totalItems} {totalItems === 1 ? "item" : "items"} added
+                  </p>
+                  <p className="text-[11px] text-emerald-100 font-medium">
+                    Tap to review & checkout
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-1.5 font-extrabold text-sm">
+                <span>${total.toFixed(2)}</span>
+                <ArrowRight className="w-4 h-4" />
+              </div>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* 6. Sticky Mobile Bottom Navigation */}
       <BottomNav cartItemCount={totalItems} />
 
+      {/* 7. Bottom Sheet Slide-Over */}
+      <CartBottomSheet />
     </div>
   );
 }
