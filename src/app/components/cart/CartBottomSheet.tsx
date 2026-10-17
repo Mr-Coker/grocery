@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { X, Plus, Minus, Trash2, ShoppingBag, ArrowRight, ShieldCheck, Sparkles } from "lucide-react";
 import { useCart } from "../../context/CartContext";
+import { CheckoutModal } from "./CheckoutModal";
 
 export function CartBottomSheet() {
   const {
@@ -32,6 +33,8 @@ export function CartBottomSheet() {
       document.body.style.overflow = "";
     };
   }, [isCartOpen]);
+
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   // Close on Escape key press
   useEffect(() => {
@@ -250,9 +253,7 @@ export function CartBottomSheet() {
             {/* Checkout Action CTA */}
             <button
               type="button"
-              onClick={() => {
-                alert("Proceeding to checkout! (Next step: Stripe / payment integration)");
-              }}
+              onClick={() => setIsCheckoutOpen(true)}
               className="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] transition-all text-white py-3.5 px-4 rounded-2xl font-bold text-sm flex items-center justify-between shadow-lg shadow-emerald-600/25 cursor-pointer"
             >
               <div className="flex flex-col items-start leading-tight">
@@ -275,6 +276,12 @@ export function CartBottomSheet() {
           </div>
         )}
       </div>
+
+      {/* Checkout Address & Payment Modal */}
+      <CheckoutModal
+        isOpen={isCheckoutOpen}
+        onClose={() => setIsCheckoutOpen(false)}
+      />
     </div>
   );
 }

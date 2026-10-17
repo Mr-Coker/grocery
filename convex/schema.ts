@@ -24,4 +24,24 @@ export default defineSchema({
   })
     .index("by_category", ["categorySlug"])
     .index("by_featured", ["isFeatured"]),
+
+  orders: defineTable({
+    customerName: v.string(),
+    phone: v.string(),
+    address: v.string(),
+    items: v.array(
+      v.object({
+        productId: v.string(),
+        name: v.string(),
+        price: v.number(),
+        quantity: v.number(),
+        imageUrl: v.string(),
+      })
+    ),
+    subtotal: v.number(),
+    deliveryFee: v.number(),
+    total: v.number(),
+    paymentMethod: v.string(), // "cod" | "card"
+    status: v.string(), // "pending" | "confirmed" | "delivered"
+  }).index("by_status", ["status"]),
 });
