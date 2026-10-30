@@ -25,7 +25,7 @@ export default defineSchema({
     .index("by_category", ["categorySlug"])
     .index("by_featured", ["isFeatured"]),
 
-    orders: defineTable({
+  orders: defineTable({
     customerName: v.string(),
     phone: v.string(),
     address: v.string(),

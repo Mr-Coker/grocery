@@ -87,15 +87,30 @@ export function ProductCard({ product }: ProductCardProps) {
 
       {/* Quick Add Button / Stepper connected to CartContext */}
       <div className="mt-3 pt-2 border-t border-stone-100">
-        {quantity === 0 ? (
+        {!product.inStock || (product.stockCount !== undefined && product.stockCount <= 0) ? (
           <button
             type="button"
-            onClick={() => addItem(product)}
-            className="w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300/80 rounded-xl py-2 px-3 text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all"
+            disabled
+            className="w-full bg-stone-100 text-stone-400 rounded-xl py-2 px-3 text-xs font-bold cursor-not-allowed"
           >
-            <Plus className="w-4 h-4 stroke-[2.5]" />
-            Add
+            Out of Stock
           </button>
+        ) : quantity === 0 ? (
+          <div className="flex flex-col gap-1">
+            {product.stockCount !== undefined && product.stockCount < 15 && (
+              <span className="text-[10px] font-bold text-amber-600 text-center animate-pulse">
+                Only {product.stockCount} left!
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={() => addItem(product)}
+              className="w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300/80 rounded-xl py-2 px-3 text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer"
+            >
+              <Plus className="w-4 h-4 stroke-[2.5]" />
+              Add
+            </button>
+          </div>
         ) : (
           <div className="w-full bg-emerald-600 text-white rounded-xl py-1.5 px-2 flex items-center justify-between shadow-xs shadow-emerald-200">
             <button

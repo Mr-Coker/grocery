@@ -1,5 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { Id } from "./_generated/dataModel";
 
 // Default coordinates for a lively demo (e.g. San Francisco or Central Park area)
 const STORE_LOCATION = {
@@ -62,6 +63,24 @@ export const createOrder = mutation({
       estimatedMinutes: 14,
     });
 
+    // 2. Real-time Inventory Decrement:
+    // Decrement stockCount for every purchased product. If 0, mark inStock as false.
+    // Because products query is reactive, all connected browsers will update instantly!
+    for (const item of args.items) {
+      try {
+        const product = await ctx.db.get(item.productId as Id<"products">);
+        if (product) {
+          const newStock = Math.max(0, (product.stockCount ?? 10) - item.quantity);
+          await ctx.db.patch(product._id, {
+            stockCount: newStock,
+            inStock: newStock > 0,
+          });
+        }
+      } catch (err) {
+        console.warn(`Could not update stock for product ${item.productId}:`, err);
+      }
+    }
+
     return orderId;
   },
 });
@@ -71,6 +90,14 @@ export const getOrderById = query({
   args: { orderId: v.id("orders") },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.orderId);
+  },
+});
+
+// Query to list recent orders in real-time (for order history or admin view)
+export const getRecentOrders = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db.query("orders").order("desc").take(10);
   },
 });
 

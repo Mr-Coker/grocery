@@ -7,15 +7,16 @@ import { useCart } from "../../context/CartContext";
 
 interface BottomNavProps {
   cartItemCount?: number;
+  onOpenCategories?: () => void;
 }
 
-export function BottomNav({ cartItemCount = 0 }: BottomNavProps) {
+export function BottomNav({ cartItemCount = 0, onOpenCategories }: BottomNavProps) {
   const pathname = usePathname();
   const { openCart } = useCart();
 
   const navItems = [
     { label: "Home", href: "/", icon: Home },
-    { label: "Categories", href: "#categories", icon: LayoutGrid },
+    { label: "Categories", onClick: onOpenCategories, icon: LayoutGrid },
     { label: "Cart", onClick: openCart, icon: ShoppingBag, badge: cartItemCount },
     { label: "Profile", href: "/profile", icon: User },
   ];

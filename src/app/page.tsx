@@ -11,10 +11,12 @@ import { Product } from "./components/grocery/ProductCard";
 import { Sparkles, ShoppingBag, ArrowRight } from "lucide-react";
 import { useCart } from "./context/CartContext";
 import { CartBottomSheet } from "./components/cart/CartBottomSheet";
+import { CategoryExplorerModal } from "./components/grocery/CategoryEplorerModal";
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [isCategoryExplorerOpen, setIsCategoryExplorerOpen] = useState(false);
   const { totalItems, total, openCart } = useCart();
 
   // 1. Fetch products from Convex reactive backend
@@ -131,10 +133,24 @@ export default function HomePage() {
       )}
 
       {/* 6. Sticky Mobile Bottom Navigation */}
-      <BottomNav cartItemCount={totalItems} />
+      <BottomNav
+        cartItemCount={totalItems}
+        onOpenCategories={() => setIsCategoryExplorerOpen(true)}
+      />
 
       {/* 7. Bottom Sheet Slide-Over */}
       <CartBottomSheet />
+
+      {/* 8. Department / Category Explorer Modal */}
+      <CategoryExplorerModal
+        isOpen={isCategoryExplorerOpen}
+        onClose={() => setIsCategoryExplorerOpen(false)}
+        selectedCategory={selectedCategory}
+        onSelectCategory={(slug) => {
+          setSelectedCategory(slug);
+          setSearchQuery("");
+        }}
+      />
     </div>
   );
 }
